@@ -1,0 +1,575 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>__TITLE__</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef1f4;--panel:rgba(255,255,255,.94);--ink:#1b2530;--muted:#5d6b78;--line:#d9dfe5;--accent:#1f6feb;--entry:#1a9a52;--exit:#d23b2a;--bad:#d4291c;--warn:#d98a1a;--chip:#f3f5f7}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#11161c;--panel:rgba(22,28,35,.94);--ink:#e6edf3;--muted:#9aa7b3;--line:#2d3742;--accent:#4c9bff;--chip:#1c242d}}
+:root[data-theme="dark"]{--bg:#11161c;--panel:rgba(22,28,35,.94);--ink:#e6edf3;--muted:#9aa7b3;--line:#2d3742;--accent:#4c9bff;--chip:#1c242d}
+*{box-sizing:border-box}html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans Thai',system-ui,sans-serif;overflow:hidden}
+#view{position:fixed;inset:0}
+.panel{position:fixed;background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:0 6px 24px rgba(0,0,0,.12);backdrop-filter:blur(6px)}
+#head{top:12px;left:12px;padding:12px 14px;max-width:min(600px,calc(100vw - 370px))}
+#head h1{font-size:17px;margin:0 0 8px;font-weight:600}
+.cards{display:flex;gap:8px;flex-wrap:wrap}
+.card{background:var(--chip);border-radius:9px;padding:6px 10px;min-width:84px}
+.card b{display:block;font-size:20px;line-height:1.2}.card span{font-size:12px;color:var(--muted)}
+.card.in b{color:var(--entry)}.card.out b{color:var(--exit)}.card.bad b{color:var(--bad)}
+#side{top:12px;right:12px;bottom:12px;width:340px;display:flex;flex-direction:column;overflow:hidden}
+#side .tabs{display:flex;border-bottom:1px solid var(--line)}
+#side .tabs button{flex:1;background:none;border:0;padding:10px 4px;font:inherit;font-size:14px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent}
+#side .tabs button.on{color:var(--ink);border-color:var(--accent);font-weight:600}
+#list{overflow:auto;padding:6px 8px 12px;flex:1}
+.grp{margin-top:6px}
+.grp>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px;padding:7px 6px;border-radius:8px;font-weight:500}
+.grp>summary::-webkit-details-marker{display:none}
+.grp>summary:hover{background:var(--chip)}
+.dot{width:11px;height:11px;border-radius:50%;flex:none;display:inline-block}
+.cnt{margin-left:auto;background:var(--chip);border-radius:20px;padding:1px 9px;font-size:13px}
+.row{display:flex;gap:8px;align-items:baseline;padding:6px 8px 6px 25px;border-radius:7px;cursor:pointer;font-size:14px}
+.row:hover{background:var(--chip)}.row.sel{background:color-mix(in srgb,var(--accent) 16%,transparent)}
+.row code{font-size:12px;color:var(--muted);min-width:54px}
+.row.badrow span{color:var(--bad)}
+.gaterow{display:flex;gap:10px;align-items:center;padding:9px 8px;border-bottom:1px solid var(--line);cursor:pointer}
+.badge{color:#fff;border-radius:6px;padding:2px 8px;font-size:13px;font-weight:600}
+table.st{width:100%;border-collapse:collapse;font-size:14px;margin:6px 0 12px}table.st td{padding:6px 8px;border-bottom:1px solid var(--line)}table.st td:last-child{text-align:right;font-weight:600}
+h3{font-size:14px;margin:12px 6px 4px;color:var(--muted);font-weight:500}
+.bad{color:var(--bad)}.ok{color:var(--entry)}
+/* barrier control cards */
+.ctlall{display:flex;gap:8px;padding:8px 4px}
+.btn{font:inherit;font-size:14px;padding:7px 12px;border-radius:8px;border:1px solid var(--line);background:var(--chip);color:var(--ink);cursor:pointer}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn:disabled{opacity:.45;cursor:default}
+.bar{border:1px solid var(--line);border-radius:10px;padding:10px;margin:8px 4px}
+.bar.fault{border-color:color-mix(in srgb,var(--bad) 55%,transparent);background:color-mix(in srgb,var(--bad) 7%,transparent)}
+.bar .top{display:flex;align-items:center;gap:8px;cursor:pointer}
+.bar .top b{font-size:15px}.bar .top span{font-size:13px;color:var(--muted)}
+.state{margin-left:auto;font-size:12px;font-weight:600;border-radius:20px;padding:2px 9px;color:#fff;white-space:nowrap}
+.state.closed{background:#6b7785}.state.moving{background:var(--warn)}.state.open{background:var(--entry)}.state.fault{background:var(--bad)}
+.bar .acts{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap}
+.bar .acts .btn{flex:1;padding:6px 8px}
+.bar .note{font-size:13px;color:var(--bad);margin-top:6px}
+#dock{left:50%;transform:translateX(-50%);bottom:12px;padding:6px;display:flex;gap:6px;flex-wrap:wrap;justify-content:center;max-width:calc(100vw - 380px)}
+#dock button{font:inherit;font-size:14px;background:var(--chip);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:6px 11px;cursor:pointer}
+#dock button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+#info{left:12px;bottom:12px;width:310px;padding:12px 14px;display:none}
+#info h2{font-size:16px;margin:0 0 2px}#info .sub{color:var(--muted);font-size:13px;margin-bottom:8px}
+#info dl{display:grid;grid-template-columns:auto 1fr;gap:3px 10px;margin:0;font-size:14px}#info dt{color:var(--muted)}#info dd{margin:0}
+#info .x{position:absolute;right:8px;top:6px;background:none;border:0;font-size:20px;color:var(--muted);cursor:pointer}
+#info .ctl{display:flex;gap:8px;margin-top:10px}#info .ctl .btn{flex:1}
+#info .warn{background:color-mix(in srgb,var(--bad) 14%,transparent);color:var(--bad);border-radius:8px;padding:8px 10px;font-size:14px;flex:1}
+.lbl{font:600 11px 'IBM Plex Sans Thai',sans-serif;color:#fff;padding:1px 6px;border-radius:5px;white-space:nowrap;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.35);transform:translateY(-6px)}
+.lbl.gate{font-size:13px;padding:3px 9px}
+.lbl.sel{outline:2px solid #fff;outline-offset:1px}
+.lbl.bad{background:var(--bad)!important;animation:pulse 1s infinite}@keyframes pulse{50%{box-shadow:0 0 0 6px rgba(212,41,28,.35)}}
+#load{position:fixed;inset:0;display:grid;place-items:center;font-size:15px;color:var(--muted)}
+body.min #head,body.min #side,body.min #dock{display:none}
+body.min #info{bottom:12px}
+@media (max-width:760px){
+ #side{top:auto;left:8px;right:8px;bottom:8px;width:auto;height:42vh}
+ #head{left:8px;top:8px;right:8px;max-width:none;padding:9px 10px}#head h1{font-size:15px}.card{min-width:0;padding:4px 8px}.card b{font-size:16px}
+ #dock{top:auto;bottom:calc(42vh + 16px);max-width:calc(100vw - 16px)}#info{left:8px;right:8px;width:auto;bottom:calc(42vh + 64px)}
+}
+</style>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/"}}</script>
+</head>
+<body>
+<div id="view"></div>
+<div id="load">กำลังโหลดโมเดล…</div>
+<div id="head" class="panel"><h1 id="title"></h1><div class="cards" id="cards"></div></div>
+<div id="side" class="panel">
+  <div class="tabs"><button data-t="ctl" class="on">ควบคุม</button><button data-t="eq">อุปกรณ์</button><button data-t="gate">ทางเข้า-ออก</button><button data-t="sum">สรุป</button></div>
+  <div id="list"></div>
+</div>
+<div id="dock" class="panel"></div>
+<div id="info" class="panel"><button class="x" aria-label="ปิด">×</button><h2></h2><div class="sub"></div><dl></dl><div class="ctl"></div></div>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+const D = __DATA__;
+const GLB = "__GLB_B64__";
+const TH = { entry: 'ทางเข้า', exit: 'ทางออก', both: 'ทางเข้า-ออก' };
+const STALL_TH = { normal: 'รถยนต์ทั่วไป', accessible: 'คนพิการ', ev: 'รถไฟฟ้า (EV)', motorcycle: 'รถจักรยานยนต์' };
+const STATUS_TH = { ok: 'ใช้งานได้', fault: 'เสีย', maintenance: 'ซ่อมบำรุง' };
+const STATE_TH = { closed: 'ปิด', opening: 'กำลังเปิด', open: 'เปิด', closing: 'กำลังปิด', fault: 'เสีย' };
+const cat = D.equip_catalogue, S = D.summary;
+const rgb = c => `rgb(${c[0]},${c[1]},${c[2]})`;
+const W2T = (x, y, z = 0) => new THREE.Vector3(x, z, -y);   // Blender (x,y,z) -> three (x,z,-y)
+const isFault = e => (e.status || 'ok') !== 'ok';
+const params = new URLSearchParams(location.search);
+if (params.get('ui') === 'min') document.body.classList.add('min');     // dashboard embed: 3D only
+
+document.title = D.name; document.getElementById('title').textContent = D.name;
+function renderCards() {
+  const faults = D.equipment.filter(isFault).length;
+  const lanesIn = S.gates.filter(g => g.type !== 'exit').reduce((a, g) => a + g.lanes, 0);
+  const lanesInOk = S.gates.filter(g => g.type !== 'exit').reduce((a, g) => a + lanesOpen(g.id), 0);
+  const lanesOut = S.gates.filter(g => g.type !== 'entry').reduce((a, g) => a + g.lanes, 0);
+  const lanesOutOk = S.gates.filter(g => g.type !== 'entry').reduce((a, g) => a + lanesOpen(g.id), 0);
+  const cards = [['in', S.entries, `ทางเข้า · ใช้ได้ ${lanesInOk}/${lanesIn} ช่องทาง`], ['out', S.exits, `ทางออก · ใช้ได้ ${lanesOutOk}/${lanesOut} ช่องทาง`],
+  ];
+  if (S.gates.length > 1) cards.unshift(['', S.gates.length, 'จุดตรวจ / ป้อม']);
+  if (S.stalls_car) cards.push(['', S.stalls_car, 'ช่องจอดรถยนต์']);
+  if (S.stalls.motorcycle) cards.push(['', S.stalls.motorcycle, 'ช่องจอดจักรยานยนต์']);
+  cards.push(['', D.equipment.length, 'อุปกรณ์ทั้งหมด']);
+  cards.push([faults ? 'bad' : '', faults, 'อุปกรณ์เสีย']);
+  document.getElementById('cards').innerHTML = cards.map(([c, n, t]) => `<div class="card ${c}"><b>${n}</b><span>${t}</span></div>`).join('');
+}
+function lanesOpen(gid) {
+  const g = S.gates.find(x => x.id === gid); if (!g) return 0;
+  const bad = D.equipment.filter(e => e.gate === gid && e.type === 'barrier_gate' && isFault(e)).length;
+  return Math.max(0, g.lanes - bad);
+}
+
+// ---------------------------------------------------------------- scene
+const host = document.getElementById('view');
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2)); renderer.setSize(innerWidth, innerHeight);
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.AgXToneMapping; renderer.toneMappingExposure = 1.15;
+host.appendChild(renderer.domElement);
+const labels = new CSS2DRenderer(); labels.setSize(innerWidth, innerHeight);
+Object.assign(labels.domElement.style, { position: 'fixed', inset: '0', pointerEvents: 'none' }); host.appendChild(labels.domElement);
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0xbfd6ea); scene.fog = new THREE.Fog(0xbfd6ea, 400, 1800);
+const camera = new THREE.PerspectiveCamera(40, innerWidth / innerHeight, .3, 3000);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true; controls.maxPolarAngle = Math.PI * .495; controls.minDistance = 3;
+// environment light: metal parts (steel base plates, bolts, brackets) need something to reflect, otherwise they render black
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(), .04).texture; scene.environmentIntensity = .55;
+scene.add(new THREE.HemisphereLight(0xdfeaff, 0x4a5a3a, .8));
+const sun = new THREE.DirectionalLight(0xfff3e2, 2.6); scene.add(sun, sun.target);
+const pts = [...(D.site || [])]; D.stalls?.forEach(s => pts.push(...s.quad));
+const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
+const B = { x0: Math.min(...xs), x1: Math.max(...xs), y0: Math.min(...ys), y1: Math.max(...ys) };
+const C = W2T((B.x0 + B.x1) / 2, (B.y0 + B.y1) / 2), SPAN = Math.max(B.x1 - B.x0, B.y1 - B.y0);
+sun.position.copy(C).add(new THREE.Vector3(-SPAN * .5, SPAN * .9, SPAN * .45)); sun.target.position.copy(C);
+sun.castShadow = true; sun.shadow.mapSize.set(4096, 4096); sun.shadow.bias = -.0004; sun.shadow.normalBias = .03;
+Object.assign(sun.shadow.camera, { left: -SPAN * .8, right: SPAN * .8, top: SPAN * .8, bottom: -SPAN * .8, near: 1, far: SPAN * 4 });
+controls.maxDistance = Math.max(600, SPAN * 2.2); scene.fog.near = Math.max(400, SPAN * 1.2); scene.fog.far = Math.max(1800, SPAN * 4);
+const SUN_DIR = new THREE.Vector3(-.5, .9, .45).normalize();
+function fitShadow() {      // shadow box follows the view: crisp at a gate, whole site when zoomed out
+  const dist = camera.position.distanceTo(controls.target), half = Math.min(SPAN * .8, Math.max(40, dist * 1.1));
+  const sc = sun.shadow.camera; if (Math.abs(sc.right - half) / half < .15 && sun.target.position.distanceTo(controls.target) < half * .2) return;
+  sun.target.position.copy(controls.target); sun.position.copy(controls.target).addScaledVector(SUN_DIR, half * 3);
+  Object.assign(sc, { left: -half, right: half, top: half, bottom: -half, near: 1, far: half * 7 }); sc.updateProjectionMatrix();
+}
+
+// ---------------------------------------------------------------- barriers (rig + realistic motion)
+const barriers = {};
+function rig(id) {
+  if (!barriers[id]) barriers[id] = { id, e: D.equipment.find(x => x.id === id) || {}, deg: 0, phase: 'closed', pt: 9 };
+  return barriers[id];
+}
+const Z = new THREE.Vector3(0, 0, 1), qTmp = new THREE.Quaternion();
+const RED = new THREE.Color(1, .06, .03), GREEN = new THREE.Color(.1, 1, .25), AMBER = new THREE.Color(1, .6, .05);
+// real boom barrier: S-curve travel (open 1.8 s, close 2.4 s), damped wobble at the top, small rebound on the rest fork
+const OPEN_T = 1.8, CLOSE_T = 2.4;
+const ease = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+function barrierState(b) { return isFault(b.e) ? 'fault' : b.phase; }
+function setBarrier(id, open, src = 'ui') {
+  const b = barriers[id]; if (!b) return { ok: false, error: 'unknown barrier' };
+  if (isFault(b.e)) return { ok: false, error: 'barrier is faulty' };
+  if (open && (b.phase === 'opening' || b.phase === 'open')) return { ok: true };
+  if (!open && (b.phase === 'closing' || b.phase === 'closed')) return { ok: true };
+  b.from = b.deg; b.phase = open ? 'opening' : 'closing'; b.pt = 0;
+  emit('barrier', { id, state: b.phase, source: src }); refreshUI(); return { ok: true };
+}
+function barrierAngle(b, dt) {
+  b.pt += dt; let d = b.deg;
+  if (b.phase === 'opening') {
+    const T = Math.max(.01, OPEN_T * (90 - b.from) / 90), k = Math.min(1, b.pt / T); d = b.from + (90 - b.from) * ease(k);
+    if (k >= 1) { b.phase = 'open'; b.pt = 0; emit('barrier', { id: b.id, state: 'open' }); refreshUI(); }
+  } else if (b.phase === 'open') {
+    d = 90 - 2.2 * Math.exp(-5 * b.pt) * Math.sin(16 * b.pt);
+  } else if (b.phase === 'closing') {
+    const T = Math.max(.01, CLOSE_T * b.from / 90), k = Math.min(1, b.pt / T); d = b.from * (1 - ease(k));
+    if (k >= 1) { b.phase = 'closed'; b.pt = 0; emit('barrier', { id: b.id, state: 'closed' }); refreshUI(); }
+  } else {
+    d = 1.6 * Math.exp(-7 * b.pt) * Math.abs(Math.sin(14 * b.pt));
+  }
+  b.deg = d; return d;
+}
+function stepBarriers(dt, t) {
+  const blink = .5 + .5 * Math.sin(t * 7);
+  for (const b of Object.values(barriers)) {
+    if (b.arm && b.rest) {
+      const ang = barrierAngle(b, dt) * Math.PI / 180;
+      b.arm.quaternion.copy(b.rest).multiply(qTmp.setFromAxisAngle(Z, ang));
+      if (b.arm2 && b.rest2) b.arm2.quaternion.copy(b.rest2).multiply(qTmp.setFromAxisAngle(Z, -ang));
+      if (b.rod && b.restRod) b.rod.quaternion.copy(b.restRod).multiply(qTmp.setFromAxisAngle(Z, ang));   // folding boom linkage rod swings with the inner section
+    }
+    const f = isFault(b.e), moving = b.phase === 'opening' || b.phase === 'closing';
+    if (b.led) {
+      if (f) { b.led.emissive.copy(RED); b.led.emissiveIntensity = 3 * blink; }
+      else { b.led.emissive.copy(moving ? AMBER : (b.phase === 'open' ? GREEN : RED)); b.led.emissiveIntensity = moving ? 3 * blink + 1 : 3; }
+    }
+    if (b.beacon) { b.beacon.emissive.copy(f ? RED : GREEN); b.beacon.emissiveIntensity = f ? 6 * blink : 4; }
+    if (b.cones) b.cones.visible = f;
+  }
+}
+
+// ---------------------------------------------------------------- model
+const roots = {}, paints = {};
+function recolor(o, rgb) {     // cars share one body mesh per kind in the .glb; the paint colour comes from node extras
+  const key = rgb.join(',');
+  o.traverse(m => {
+    if (!m.isMesh || !/^CarPaint/.test(m.material?.name || '')) return;
+    if (!paints[key]) { paints[key] = m.material.clone(); paints[key].color.setRGB(...rgb); }
+    m.material = paints[key];
+  });
+}
+const bin = Uint8Array.from(atob(GLB), c => c.charCodeAt(0));
+new GLTFLoader().parse(bin.buffer, '', g => {
+  g.scene.traverse(o => {
+    if (o.isMesh) {
+      o.receiveShadow = true;
+      o.castShadow = !/^(Ground|Lot_|Road_|Street|StallLines|Arrows|AccessibleFill|EVFill|AccessibleSymbol|MotoStallLines|Loop|Curbs|StopLines|IslandHatch)/.test(o.name);
+      const matName = o.material?.name || '';
+      if (matName.startsWith('Art_') && o.material.map) {
+        // printed artwork / screens (cropped from real photos): show the exact picture, unlit and not tone-mapped,
+        // sharp at an angle (anisotropic filtering); otherwise lighting + AgX grey out whites and soften text
+        const picture = o.material.map;
+        picture.anisotropy = renderer.capabilities.getMaxAnisotropy(); picture.needsUpdate = true;
+        o.material = new THREE.MeshBasicMaterial({ name: matName, map: picture, transparent: o.material.transparent,
+                                                   alphaTest: o.material.transparent ? .02 : 0, toneMapped: false });
+        o.castShadow = false;
+      } else if (matName.startsWith('PanelBlack')) {
+        o.material.envMapIntensity = .12; o.material.roughness = 1;      // kiosk front panel: stay black, no room reflection
+      } else if (o.material && o.material.emissive?.getHex()) o.material.emissiveIntensity = 1.5;
+      const tint = { Grass: [.42, .72, .3], Asphalt: [.62, .62, .64], StreetAsphalt: [.5, .5, .52] }[o.material?.name];
+      if (tint && o.material.map) o.material.color.setRGB(...tint);
+    }
+    if (o.userData?.paint) recolor(o, o.userData.paint);
+    if (o.name.startsWith('EQ_')) roots[o.name.slice(3)] = o;
+    if (o.name.startsWith('Cable_')) cableMeshes.push(o);
+    if (o.name.startsWith('ARM_')) rig(o.name.slice(4)).arm = o;
+    if (o.name.startsWith('ARM2_')) rig(o.name.slice(5)).arm2 = o;      // folding boom: outer section stays level
+    if (o.name.startsWith('ROD_')) rig(o.name.slice(4)).rod = o;        // folding boom: parallelogram rod (pivots on the cabinet)
+    if (o.name.startsWith('FAULT_')) rig(o.name.slice(6)).cones = o;
+    if (o.isMesh && /^(LED|BEACON)_/.test(o.material?.name || '')) {
+      const n = o.material.name, k = n.split('_')[0], id = n.slice(n.indexOf('_') + 1);
+      rig(id)[k === 'LED' ? 'led' : 'beacon'] = o.material;
+    }
+  });
+  for (const b of Object.values(barriers)) { if (b.arm) b.rest = b.arm.quaternion.clone(); if (b.arm2) b.rest2 = b.arm2.quaternion.clone(); if (b.rod) b.restRod = b.rod.quaternion.clone(); }
+  scene.add(g.scene); document.getElementById('load').remove();
+  buildLabels(); buildCables(); syncFaults(); view('overview'); emit('ready', { barriers: Object.keys(barriers), equipment: D.equipment.length });
+}, e => { document.getElementById('load').textContent = 'โหลดโมเดลไม่สำเร็จ: ' + e.message; });
+
+// ---------------------------------------------------------------- cable routes + control room
+const cableMeshes = [], cableLabels = []; let showCables = true;
+function buildCables() {
+  for (const c of D.cables || []) {
+    const el = document.createElement('div'); el.className = 'lbl'; el.style.background = '#334'; el.textContent = c.label;
+    makeFlyLabel(el, c.mid, 25);
+    const o = new CSS2DObject(el); o.position.copy(W2T(c.mid[0], c.mid[1], 2)); scene.add(o); cableLabels.push(o);
+  }
+  if (D.control_room) {
+    const el = document.createElement('div'); el.className = 'lbl gate'; el.style.background = '#1f6feb'; el.textContent = '🖥 ' + D.control_room.label;
+    makeFlyLabel(el, D.control_room.pos, 45);
+    const o = new CSS2DObject(el); o.position.copy(W2T(D.control_room.pos[0], D.control_room.pos[1], 26)); scene.add(o); cableLabels.push(o);
+  }
+  for (const s of D.streets || []) {
+    const el = document.createElement('div'); el.className = 'lbl'; el.style.background = '#55606b'; el.textContent = s.label;
+    makeFlyLabel(el, s.pos, 35);
+    const o = new CSS2DObject(el); o.position.copy(W2T(s.pos[0], s.pos[1], 1)); scene.add(o);
+  }
+  if (!(D.cables || []).length) document.getElementById('bCab')?.remove();
+}
+// road names, control room and cable labels: click to fly the camera to that spot
+function makeFlyLabel(el, pos, distance) {
+  el.style.pointerEvents = 'auto'; el.style.cursor = 'pointer'; el.title = 'คลิกเพื่อไปที่จุดนี้';
+  el.onclick = () => flyTo(W2T(pos[0], pos[1], 1), distance);
+}
+function setCables(on) { showCables = on; cableMeshes.forEach(m => m.visible = on); cableLabels.forEach(o => o.visible = on); }
+
+// ---------------------------------------------------------------- labels + fault rings
+const labelEls = {}, ringEls = {};
+function buildLabels() {
+  for (const e of D.equipment) {
+    if (e.auto) continue;
+    const el = document.createElement('div'); el.className = 'lbl'; el.style.pointerEvents = 'auto';
+    el.onclick = () => select(e.id, true);
+    const o = new CSS2DObject(el); const h = { cctv: 5, light_pole: 9, vacancy_sign: 3.2, guard_booth: 3 }[e.type] ?? 2;
+    o.position.copy(W2T(e.pos[0], e.pos[1], h + .3)); scene.add(o); labelEls[e.id] = { o, el, e };
+  }
+  for (const g of D.gates) {
+    const el = document.createElement('div'); el.className = 'lbl gate'; el.style.pointerEvents = 'auto';
+    el.style.background = g.type === 'entry' ? 'var(--entry)' : g.type === 'exit' ? 'var(--exit)' : 'var(--warn)';
+    el.textContent = g.label ? g.label : `${g.id} ${TH[g.type]}`; el.onclick = () => gateView(g);
+    const o = new CSS2DObject(el); o.position.copy(W2T(g.pos[0], g.pos[1], 5)); scene.add(o);
+  }
+}
+const hidden = new Set(['loop_detector', 'light_pole', 'speed_bump', 'intercom', 'ev_charger', 'traffic_cone', 'radar_sensor']);
+let showLabels = true;
+function styleLabels() {
+  for (const { o, el, e } of Object.values(labelEls)) {
+    const f = isFault(e);
+    el.classList.toggle('bad', f); el.textContent = f ? `⚠ ${e.id} ${STATUS_TH[e.status] || 'เสีย'}` : e.id;
+    el.style.background = f ? '' : rgb(cat[e.type].color); el.title = e.label;
+    el.classList.toggle('sel', e.id === selId);
+    o.visible = f || (showLabels && (!hidden.has(e.type) || e.id === selId));
+    o.userData.want = o.visible; o.userData.always = f || e.id === selId;
+  }
+}
+// dashboards: device chips only when zoomed in close enough to read them (gate names, faults and the selection always show)
+const LABEL_NEAR = 55;
+function labelLOD() {
+  for (const { o } of Object.values(labelEls)) {
+    if (!o.userData.want) continue;
+    o.visible = o.userData.always || camera.position.distanceTo(o.position) < LABEL_NEAR;
+  }
+}
+function syncFaults() {
+  for (const e of D.equipment) {
+    const f = isFault(e);
+    if (f && !ringEls[e.id]) {
+      const m = new THREE.Mesh(new THREE.RingGeometry(2.6, 3.1, 64), new THREE.MeshBasicMaterial({ color: 0xff2a1a, transparent: true, opacity: .8, depthWrite: false }));
+      m.rotation.x = -Math.PI / 2; m.position.copy(W2T(e.pos[0], e.pos[1], .2)); scene.add(m); ringEls[e.id] = m;
+    } else if (!f && ringEls[e.id]) { scene.remove(ringEls[e.id]); delete ringEls[e.id]; }
+  }
+  styleLabels(); renderCards(); refreshUI();
+}
+function setStatus(id, status, note) {
+  const e = D.equipment.find(x => x.id === id); if (!e) return { ok: false, error: 'unknown equipment' };
+  if (!STATUS_TH[status]) return { ok: false, error: 'status must be ok | fault | maintenance' };
+  e.status = status; e.status_th = STATUS_TH[status]; if (note !== undefined) e.note = note;
+  const b = barriers[id];
+  if (b && status !== 'ok' && b.phase !== 'closed') { b.from = b.deg; b.phase = 'closing'; b.pt = 0; }   // a failing boom drops
+  syncFaults(); emit('status', { id, status, note: e.note || '' }); return { ok: true };
+}
+
+// ---------------------------------------------------------------- selection + info card
+let selId = null;
+const box = new THREE.Box3Helper(new THREE.Box3(), 0xffd400); box.visible = false; scene.add(box);
+const ring = new THREE.Mesh(new THREE.RingGeometry(1.1, 1.4, 48), new THREE.MeshBasicMaterial({ color: 0xffd400, transparent: true, opacity: .9, depthWrite: false }));
+ring.rotation.x = -Math.PI / 2; ring.visible = false; scene.add(ring);
+const info = document.getElementById('info');
+info.querySelector('.x').onclick = () => select(null);
+function select(id, fly) {
+  selId = id;
+  document.querySelectorAll('.row').forEach(r => r.classList.toggle('sel', r.dataset.id === id));
+  styleLabels();
+  if (!id) { info.style.display = 'none'; box.visible = ring.visible = false; return; }
+  const e = D.equipment.find(x => x.id === id), r = roots[id]; if (!e) return;
+  if (r) { box.box.setFromObject(r).expandByScalar(.15); box.visible = true; }
+  const p = W2T(e.pos[0], e.pos[1], .2); ring.position.copy(p); ring.visible = true;
+  info.style.display = 'block'; refreshInfo();
+  if (fly) flyTo(p, Math.max(9, r ? box.box.getSize(new THREE.Vector3()).length() * 3 : 10));
+  document.querySelector(`.row[data-id="${id}"]`)?.scrollIntoView({ block: 'nearest' });
+  emit('select', { id });
+}
+function refreshInfo() {
+  if (!selId) return;
+  const e = D.equipment.find(x => x.id === selId); if (!e) return;
+  const gate = e.gate && D.gates.find(g => g.id === e.gate);
+  info.querySelector('h2').textContent = `${e.id} · ${e.name_th}`;
+  info.querySelector('.sub').textContent = e.label !== e.name_th ? e.label : '';
+  const rows = [...(e.model_th ? [['รุ่น', e.model_th]] : []), ['ตำแหน่ง', `X ${e.pos[0].toFixed(1)} ม., Y ${e.pos[1].toFixed(1)} ม.`]];
+  if (gate) rows.push(['ประจำจุด', `${gate.id} ${gate.label || TH[gate.type]}`]);
+  if (e.stall) rows.push(['ช่องจอด', e.stall]);
+  rows.push(['สถานะ', isFault(e) ? `<span class="bad">⚠ ${STATUS_TH[e.status]}</span>` : `<span class="ok">ใช้งานได้</span>`]);
+  if (barriers[e.id] && !isFault(e)) rows.push(['ไม้กั้น', STATE_TH[barriers[e.id].phase]]);
+  if (e.note) rows.push(['หมายเหตุ', e.note]);
+  info.querySelector('dl').innerHTML = rows.map(([a, b]) => `<dt>${a}</dt><dd>${b}</dd>`).join('');
+  const c = info.querySelector('.ctl'); const b = barriers[e.id];
+  if (!b) { c.innerHTML = ''; return; }
+  if (isFault(e)) { c.innerHTML = '<div class="warn">ไม้กั้นเสีย ปิดช่องทางด้วยกรวยแล้ว</div>'; return; }
+  const open = b.phase === 'opening' || b.phase === 'open';
+  c.innerHTML = `<button class="btn pri" data-a="open" ${open ? 'disabled' : ''}>เปิดไม้กั้น</button><button class="btn" data-a="close" ${open ? '' : 'disabled'}>ปิดไม้กั้น</button>`;
+  c.querySelectorAll('button').forEach(x => x.onclick = () => setBarrier(e.id, x.dataset.a === 'open'));
+}
+const ray = new THREE.Raycaster(), ptr = new THREE.Vector2(); let down = null;
+renderer.domElement.addEventListener('pointerdown', ev => down = [ev.clientX, ev.clientY]);
+renderer.domElement.addEventListener('pointerup', ev => {
+  if (!down || Math.hypot(ev.clientX - down[0], ev.clientY - down[1]) > 5) return;
+  ptr.set(ev.clientX / innerWidth * 2 - 1, -ev.clientY / innerHeight * 2 + 1); ray.setFromCamera(ptr, camera);
+  for (const h of ray.intersectObjects(scene.children, true)) {
+    let o = h.object; while (o && !o.name.startsWith('EQ_')) o = o.parent;
+    if (o) { select(o.name.slice(3)); return; }
+    if (h.object.isMesh && !/Ground/.test(h.object.name)) break;
+  }
+  select(null);
+});
+
+// ---------------------------------------------------------------- camera moves
+let anim = null;
+function flyTo(target, dist, dir) {
+  const d = dir || camera.position.clone().sub(controls.target).normalize();
+  if (!dir && d.y < .35) { d.y = .55; d.normalize(); }
+  anim = { t: 0, p0: camera.position.clone(), t0: controls.target.clone(), p1: target.clone().add(d.multiplyScalar(dist)), t1: target.clone() };
+}
+function view(k) {
+  document.querySelectorAll('#dock button[data-v]').forEach(b => b.classList.toggle('on', b.dataset.v === k));
+  if (k === 'overview') flyTo(C, SPAN * 1.05, new THREE.Vector3(.45, .62, .65).normalize());
+  if (k === 'top') flyTo(C, SPAN * 1.25, new THREE.Vector3(0, 1, .02).normalize());
+}
+function gateView(g) {
+  const h = (g.heading ?? 90) * Math.PI / 180, d = new THREE.Vector3(-Math.cos(h), .55, Math.sin(h)).normalize();
+  document.querySelectorAll('#dock button[data-v]').forEach(b => b.classList.toggle('on', b.dataset.v === g.id));
+  flyTo(W2T(g.pos[0], g.pos[1], 1), 16 + (g.width || 8) * 1.2, d);
+}
+
+// ---------------------------------------------------------------- side panel
+const list = document.getElementById('list');
+let tab = 'ctl';
+function tabCtl() {
+  const bs = D.equipment.filter(e => e.type === 'barrier_gate');
+  list.innerHTML = `<div class="ctlall"><button class="btn pri" id="allOpen">เปิดทุกไม้กั้น</button><button class="btn" id="allClose">ปิดทุกไม้กั้น</button></div>` +
+    bs.map(e => {
+      const b = barriers[e.id] || { phase: 'closed' }, st = isFault(e) ? 'fault' : b.phase;
+      const cls = st === 'opening' || st === 'closing' ? 'moving' : st;
+      const open = st === 'opening' || st === 'open';
+      const g = D.gates.find(x => x.id === e.gate);
+      return `<div class="bar ${isFault(e) ? 'fault' : ''}" data-id="${e.id}">
+        <div class="top"><b>${e.id}</b><span>${e.label}${g ? ' · ' + (g.label || g.id + ' ' + TH[g.type]) : ''}</span><span class="state ${cls}">${STATE_TH[st]}</span></div>
+        <div class="acts">
+          <button class="btn pri" data-a="open" ${open || isFault(e) ? 'disabled' : ''}>เปิด</button>
+          <button class="btn" data-a="close" ${!open || isFault(e) ? 'disabled' : ''}>ปิด</button>
+          <button class="btn" data-a="${isFault(e) ? 'fix' : 'break'}">${isFault(e) ? 'ซ่อมเสร็จ' : 'แจ้งเสีย'}</button>
+        </div>${isFault(e) && e.note ? `<div class="note">${e.note}</div>` : ''}</div>`;
+    }).join('');
+  list.querySelector('#allOpen').onclick = () => bs.forEach(e => setBarrier(e.id, true));
+  list.querySelector('#allClose').onclick = () => bs.forEach(e => setBarrier(e.id, false));
+  list.querySelectorAll('.bar').forEach(el => {
+    const id = el.dataset.id;
+    el.querySelector('.top').onclick = () => select(id, true);
+    el.querySelectorAll('button').forEach(bt => bt.onclick = () => {
+      const a = bt.dataset.a;
+      if (a === 'open' || a === 'close') setBarrier(id, a === 'open');
+      if (a === 'break') setStatus(id, 'fault', 'แจ้งเสียจากหน้าควบคุม');
+      if (a === 'fix') setStatus(id, 'ok', '');
+    });
+  });
+}
+function tabEq() {
+  const groups = {};
+  D.equipment.forEach(e => (groups[e.type] ??= []).push(e));
+  list.innerHTML = Object.entries(groups).map(([t, es]) => `<details class="grp" ${es.length <= 6 ? 'open' : ''}>
+    <summary><span class="dot" style="background:${rgb(cat[t].color)}"></span>${cat[t].name_th}<span class="cnt">${es.length}</span></summary>
+    ${es.map(e => `<div class="row${isFault(e) ? ' badrow' : ''}" data-id="${e.id}"><code>${e.id}</code><span>${e.label !== e.name_th ? e.label : (e.gate ? 'จุด ' + e.gate : e.stall ? 'ช่อง ' + e.stall : e.name_th)}${isFault(e) ? ' · ' + STATUS_TH[e.status] : ''}</span></div>`).join('')}
+  </details>`).join('');
+  list.querySelectorAll('.row').forEach(r => r.onclick = () => select(r.dataset.id, true));
+}
+function tabGate() {
+  list.innerHTML = D.gates.map(g => {
+    const eq = D.equipment.filter(e => e.gate === g.id), lo = lanesOpen(g.id);
+    return `<div class="gaterow" data-g="${g.id}"><span class="badge" style="background:var(--${g.type === 'exit' ? 'exit' : 'entry'})">${g.id}</span>
+      <div><div>${g.label || TH[g.type]} · ${TH[g.type]}</div><div style="font-size:13px;color:var(--muted)">${g.lanes || 1} ช่องทาง${lo < (g.lanes || 1) ? ` · <b class="bad">ใช้ได้ ${lo}</b>` : ''} · อุปกรณ์ ${eq.length} ชิ้น</div></div></div>
+      ${eq.map(e => `<div class="row${isFault(e) ? ' badrow' : ''}" data-id="${e.id}"><code>${e.id}</code><span>${e.label}${isFault(e) ? ' · ' + STATUS_TH[e.status] : ''}</span></div>`).join('')}`;
+  }).join('');
+  list.querySelectorAll('.gaterow').forEach(r => r.onclick = () => gateView(D.gates.find(g => g.id === r.dataset.g)));
+  list.querySelectorAll('.row').forEach(r => r.onclick = () => select(r.dataset.id, true));
+}
+function tabSum() {
+  const faults = D.equipment.filter(isFault);
+  const st = Object.entries(S.stalls).map(([k, v]) => `<tr><td>${STALL_TH[k] || k}</td><td>${v}</td></tr>`).join('');
+  const eq = Object.entries(S.equipment).map(([k, v]) => `<tr><td><span class="dot" style="background:${rgb(cat[k].color)};margin-right:6px"></span>${v.name_th}</td><td>${v.count}</td></tr>`).join('');
+  list.innerHTML = `<h3>ทางเข้า-ออก</h3><table class="st">${S.gates.map(g => `<tr><td>${g.id} ${TH[g.type]}</td><td>ใช้ได้ ${lanesOpen(g.id)}/${g.lanes} ช่องทาง</td></tr>`).join('')}</table>
+  ${faults.length ? `<h3 class="bad">อุปกรณ์เสีย</h3><table class="st">${faults.map(f => `<tr><td>${f.id} ${f.label || f.name_th}<div style="font-size:12px;color:var(--muted)">${f.note || ''}</div></td><td class="bad">${STATUS_TH[f.status]}</td></tr>`).join('')}</table>` : ''}
+  ${S.stalls_car ? `<h3>ช่องจอด</h3><table class="st">${st}<tr><td><b>รวมรถยนต์</b></td><td>${S.stalls_car}</td></tr></table>` : ''}
+  ${(D.cables || []).length ? `<h3>แนวสาย Uplink จาก Control Room</h3><table class="st">${D.cables.map(c => `<tr><td>→ ${c.to}</td><td>≈ ${(c.length_m || 0).toLocaleString()} ม.</td></tr>`).join('')}<tr><td><b>รวม</b></td><td>≈ ${D.cables.reduce((a, c) => a + (c.length_m || 0), 0).toLocaleString()} ม.</td></tr></table>` : ''}
+  <h3>อุปกรณ์</h3><table class="st">${eq}</table>${S.site_area_m2 ? `<h3>พื้นที่ไซต์ ${S.site_area_m2.toLocaleString()} ตร.ม.</h3>` : ''}`;
+}
+const tabs = { ctl: tabCtl, eq: tabEq, gate: tabGate, sum: tabSum };
+function refreshUI() { tabs[tab](); refreshInfo(); }
+document.querySelectorAll('#side .tabs button').forEach(b => b.onclick = () => {
+  tab = b.dataset.t; document.querySelectorAll('#side .tabs button').forEach(x => x.classList.toggle('on', x === b)); refreshUI();
+});
+renderCards(); refreshUI();
+
+// ---------------------------------------------------------------- dock
+const dock = document.getElementById('dock');
+const btns = [['overview', 'ภาพรวม'], ['top', 'มุมบน'], ...D.gates.map(g => [g.id, g.type === 'both' ? g.id : `${g.id} ${TH[g.type]}`])];
+dock.innerHTML = btns.map(([k, t]) => `<button data-v="${k}">${t}</button>`).join('') +
+  `<button id="bCab" class="on">แนวสาย</button><button id="bLbl" class="on">ป้ายชื่อ</button><button id="bAll">แสดงทุกป้าย</button><button id="bShot">บันทึกภาพ</button>`;
+dock.querySelectorAll('button[data-v]').forEach(b => b.onclick = () => {
+  const g = D.gates.find(x => x.id === b.dataset.v); g ? gateView(g) : view(b.dataset.v);
+});
+document.getElementById('bCab') && (document.getElementById('bCab').onclick = e => { setCables(!showCables); e.target.classList.toggle('on', showCables); });
+document.getElementById('bLbl').onclick = e => { showLabels = !showLabels; e.target.classList.toggle('on', showLabels); styleLabels(); };
+document.getElementById('bAll').onclick = e => {
+  const on = !e.target.classList.contains('on'); e.target.classList.toggle('on', on);
+  ['loop_detector', 'light_pole', 'speed_bump', 'intercom', 'ev_charger', 'radar_sensor'].forEach(t => on ? hidden.delete(t) : hidden.add(t)); styleLabels();
+};
+document.getElementById('bShot').onclick = async () => {
+  renderer.render(scene, camera);
+  const url = renderer.domElement.toDataURL('image/png'), name = 'parking_view.png';
+  try {
+    const dl = window.claude && await window.claude.use('downloads');
+    if (dl) { const blob = await (await fetch(url)).blob(); await dl.save({ filename: name, data: blob }); return; }
+  } catch (err) { /* fall through */ }
+  const a = document.createElement('a'); a.href = url; a.download = name; a.click();
+};
+
+// ---------------------------------------------------------------- dashboard API
+// In-page:   window.ParkingSite.openBarrier('BG-01'), .closeBarrier(id), .toggleBarrier(id),
+//            .setStatus(id, 'ok'|'fault'|'maintenance', note), .select(id), .getState(), .on(event, fn)
+// In iframe: parent.postMessage({ type: 'parking', action: 'open'|'close'|'toggle'|'status'|'select'|'state', id, status, note }, '*')
+//            events come back as { type: 'parking-event', event: 'ready'|'barrier'|'status'|'select', ...data }
+const listeners = {};
+function emit(event, data) {
+  (listeners[event] || []).forEach(fn => { try { fn(data); } catch (err) { console.error(err); } });
+  if (window.parent !== window) window.parent.postMessage({ type: 'parking-event', event, ...data }, '*');
+}
+function getState() {
+  return {
+    barriers: Object.values(barriers).map(b => ({ id: b.id, state: barrierState(b), angle: Math.round(b.deg), gate: b.e.gate || null })),
+    equipment: D.equipment.map(e => ({ id: e.id, type: e.type, status: e.status || 'ok', note: e.note || '' })),
+    gates: S.gates.map(g => ({ id: g.id, type: g.type, lanes: g.lanes, lanes_open: lanesOpen(g.id) })),
+  };
+}
+const API = {
+  openBarrier: id => setBarrier(id, true, 'api'), closeBarrier: id => setBarrier(id, false, 'api'),
+  toggleBarrier: id => { const b = barriers[id]; return b ? setBarrier(id, !(b.phase === 'opening' || b.phase === 'open'), 'api') : { ok: false, error: 'unknown barrier' }; },
+  setStatus, select: id => (select(id, true), { ok: true }), getState,
+  on: (event, fn) => ((listeners[event] ||= []).push(fn), () => listeners[event] = listeners[event].filter(f => f !== fn)),
+};
+window.ParkingSite = API;
+window.addEventListener('message', ev => {
+  const m = ev.data; if (!m || m.type !== 'parking') return;
+  let r;
+  switch (m.action) {
+    case 'open': r = API.openBarrier(m.id); break;
+    case 'close': r = API.closeBarrier(m.id); break;
+    case 'toggle': r = API.toggleBarrier(m.id); break;
+    case 'status': r = API.setStatus(m.id, m.status, m.note); break;
+    case 'select': r = API.select(m.id); break;
+    case 'state': r = { ok: true, state: getState() }; break;
+    default: r = { ok: false, error: 'unknown action' };
+  }
+  ev.source?.postMessage({ type: 'parking-reply', action: m.action, id: m.id, requestId: m.requestId, ...r }, ev.origin === 'null' ? '*' : ev.origin);
+});
+
+// ---------------------------------------------------------------- loop
+addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight); labels.setSize(innerWidth, innerHeight);
+});
+camera.position.copy(C).add(new THREE.Vector3(SPAN, SPAN, SPAN)); controls.target.copy(C);
+const clock = new THREE.Clock();
+renderer.setAnimationLoop(() => {
+  const dt = Math.min(.25, clock.getDelta()), t = clock.elapsedTime;
+  if (anim) {
+    anim.t = Math.min(1, anim.t + dt / 1.1); const k = 1 - Math.pow(1 - anim.t, 3);
+    camera.position.lerpVectors(anim.p0, anim.p1, k); controls.target.lerpVectors(anim.t0, anim.t1, k);
+    if (anim.t >= 1) anim = null;
+  }
+  stepBarriers(dt, t); fitShadow(); labelLOD();
+  if (ring.visible) ring.material.opacity = .55 + .4 * Math.sin(t * 4);
+  for (const m of Object.values(ringEls)) m.material.opacity = .45 + .4 * Math.sin(t * 6);
+  controls.update(); renderer.render(scene, camera); labels.render(scene, camera);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,343 @@
+{
+ "name": "โครงการด่านตรวจ 5 จุด (ผังย่อสำหรับ Dashboard)",
+ "notes": "Distances between checkpoints shortened for the dashboard; gate layouts and hardware are to scale.",
+ "streets": [
+  {
+   "id": "CHT",
+   "label": "ถนนจตุรทิศ",
+   "polygon": [
+    [
+     -36,
+     -22
+    ],
+    [
+     -24,
+     -22
+    ],
+    [
+     -24,
+     22
+    ],
+    [
+     -36,
+     22
+    ]
+   ],
+   "centerline": [
+    [
+     -30,
+     -22
+    ],
+    [
+     -30,
+     22
+    ]
+   ]
+  },
+  {
+   "id": "KP7",
+   "label": "ถนนกำแพงเพชร 7",
+   "polygon": [
+    [
+     84,
+     -58.65
+    ],
+    [
+     132,
+     -58.65
+    ],
+    [
+     132,
+     -48.65
+    ],
+    [
+     84,
+     -48.65
+    ]
+   ],
+   "centerline": [
+    [
+     84,
+     -53.65
+    ],
+    [
+     132,
+     -53.65
+    ]
+   ]
+  }
+ ],
+ "roads": [
+  {
+   "id": "W",
+   "label": "ทางเชื่อมถนนจตุรทิศ",
+   "points": [
+    [
+     -24,
+     0
+    ],
+    [
+     -16,
+     0
+    ]
+   ],
+   "width": 13.3,
+   "markings": false
+  },
+  {
+   "id": "M1",
+   "label": "ถนนภายใน",
+   "points": [
+    [
+     16,
+     0
+    ],
+    [
+     48,
+     0
+    ]
+   ],
+   "width": 13.3,
+   "trim": [
+    0,
+    7.15
+   ]
+  },
+  {
+   "id": "M2",
+   "label": "ถนนภายใน",
+   "points": [
+    [
+     48,
+     0
+    ],
+    [
+     78,
+     0
+    ]
+   ],
+   "width": 13.3,
+   "trim": [
+    7.15,
+    7.15
+   ]
+  },
+  {
+   "id": "M3",
+   "label": "ถนนภายใน",
+   "points": [
+    [
+     78,
+     0
+    ],
+    [
+     108,
+     0
+    ]
+   ],
+   "width": 13.3,
+   "trim": [
+    7.15,
+    7.15
+   ]
+  },
+  {
+   "id": "M4",
+   "label": "ถนนภายใน",
+   "points": [
+    [
+     108,
+     0
+    ],
+    [
+     134,
+     0
+    ]
+   ],
+   "width": 13.3,
+   "trim": [
+    7.15,
+    0
+   ]
+  },
+  {
+   "id": "E",
+   "label": "ทางออกศูนย์วิจัย",
+   "points": [
+    [
+     166,
+     0
+    ],
+    [
+     176,
+     0
+    ]
+   ],
+   "width": 13.3,
+   "markings": false
+  },
+  {
+   "id": "B4",
+   "label": "ทางเข้า I-HOUSE (A,B,C)",
+   "points": [
+    [
+     48,
+     6.65
+    ],
+    [
+     48,
+     10.65
+    ]
+   ],
+   "width": 13.3,
+   "markings": false
+  },
+  {
+   "id": "B5",
+   "label": "ทางเข้า I-HOUSE (C,D)",
+   "points": [
+    [
+     78,
+     6.65
+    ],
+    [
+     78,
+     10.65
+    ]
+   ],
+   "width": 13.3,
+   "markings": false
+  },
+  {
+   "id": "B2",
+   "label": "ทางเชื่อมจุดที่ 2",
+   "points": [
+    [
+     108,
+     -6.65
+    ],
+    [
+     108,
+     -10.65
+    ]
+   ],
+   "width": 13.3,
+   "markings": false
+  },
+  {
+   "id": "B2S",
+   "label": "ออกถนนกำแพงเพชร 7",
+   "points": [
+    [
+     108,
+     -42.65
+    ],
+    [
+     108,
+     -48.65
+    ]
+   ],
+   "width": 13.3,
+   "markings": false
+  }
+ ],
+ "gate_kits": [
+  {
+   "id": "G1",
+   "label": "จุดที่ 1 ป้อมจตุรทิศ",
+   "template": "T1323",
+   "pos": [
+    0,
+    0
+   ],
+   "heading": 0,
+   "apron": 16,
+   "road_width": 13.3
+  },
+  {
+   "id": "G2",
+   "label": "จุดที่ 2 ป้อมเพชรบุรี",
+   "template": "T1323",
+   "pos": [
+    108,
+    -26.65
+   ],
+   "heading": 90,
+   "apron": 16,
+   "road_width": 13.3,
+   "faults": {
+    "ขาเข้า ช่อง 2": "fault"
+   }
+  },
+  {
+   "id": "G3",
+   "label": "จุดที่ 3 ป้อมทางออกศูนย์วิจัย",
+   "template": "T1060",
+   "pos": [
+    150,
+    0
+   ],
+   "heading": 180,
+   "apron": 16,
+   "road_width": 13.3
+  },
+  {
+   "id": "G4",
+   "label": "จุดที่ 4 ป้อม I-HOUSE (A,B,C)",
+   "template": "T794",
+   "pos": [
+    48,
+    26.65
+   ],
+   "heading": 90,
+   "apron": 16,
+   "road_width": 13.3
+  },
+  {
+   "id": "G5",
+   "label": "จุดที่ 5 ป้อม I-HOUSE (C,D)",
+   "template": "T884",
+   "pos": [
+    78,
+    26.65
+   ],
+   "heading": 90,
+   "apron": 16,
+   "road_width": 13.3
+  }
+ ],
+ "buildings": [
+  {
+   "id": "BB",
+   "label": "Control Room (Bldg B)",
+   "polygon": [
+    [
+     18,
+     9.65
+    ],
+    [
+     39.35,
+     9.65
+    ],
+    [
+     39.35,
+     21.65
+    ],
+    [
+     18,
+     21.65
+    ]
+   ],
+   "height": 8
+  }
+ ],
+ "control_room": {
+  "pos": [
+   28.675,
+   9.65
+  ],
+  "label": "Control Room (ชั่วคราว)"
+ },
+ "cables": [],
+ "trees": []
+}

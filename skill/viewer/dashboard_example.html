@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Parking Dashboard Example</title>
+<style>
+:root{--bg:#f2f4f7;--panel:#fff;--ink:#1b2530;--muted:#5d6b78;--line:#d9dfe5;--accent:#1f6feb;--ok:#1a9a52;--bad:#d4291c;--warn:#d98a1a}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1419;--panel:#161c23;--ink:#e6edf3;--muted:#9aa7b3;--line:#2d3742;--accent:#4c9bff}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px system-ui,'Noto Sans Thai',sans-serif;display:grid;grid-template-columns:320px 1fr;height:100vh}
+aside{background:var(--panel);border-right:1px solid var(--line);padding:16px;overflow:auto}
+h1{font-size:17px;margin:0 0 12px}h2{font-size:13px;color:var(--muted);font-weight:500;margin:18px 0 8px}
+.b{border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:8px}
+.b .t{display:flex;justify-content:space-between;align-items:center}.s{font-size:12px;color:#fff;border-radius:20px;padding:2px 9px}
+.s.closed{background:#6b7785}.s.opening,.s.closing{background:var(--warn)}.s.open{background:var(--ok)}.s.fault{background:var(--bad)}
+.a{display:flex;gap:6px;margin-top:8px}button{flex:1;font:inherit;font-size:14px;padding:6px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+button.p{background:var(--accent);color:#fff;border-color:var(--accent)}
+#log{font:12px ui-monospace,monospace;color:var(--muted);white-space:pre-wrap;max-height:240px;overflow:auto}
+iframe{width:100%;height:100%;border:0}
+@media (max-width:760px){body{grid-template-columns:1fr;grid-template-rows:auto 60vh}}
+</style>
+</head>
+<body>
+<aside>
+  <h1>ตัวอย่าง Dashboard</h1>
+  <div style="font-size:13px;color:var(--muted)">หน้านี้ฝังโมเดล 3D ด้วย iframe (index.html?ui=min) แล้วสั่งงานผ่าน postMessage</div>
+  <h2>ไม้กั้น</h2><div id="bars">รอโมเดลโหลด…</div>
+  <h2>เหตุการณ์จากโมเดล</h2><div id="log"></div>
+</aside>
+<iframe id="site" src="index.html?ui=min" title="3D site"></iframe>
+<script>
+const frame = document.getElementById('site'), bars = document.getElementById('bars'), log = document.getElementById('log');
+const TH = { closed: 'ปิด', opening: 'กำลังเปิด', open: 'เปิด', closing: 'กำลังปิด', fault: 'เสีย' };
+const send = msg => frame.contentWindow.postMessage({ type: 'parking', ...msg }, '*');
+let state = null;
+function render() {
+  if (!state) return;
+  bars.innerHTML = state.barriers.map(b => `<div class="b"><div class="t"><b>${b.id}</b><span class="s ${b.state}">${TH[b.state]}</span></div>
+    <div class="a"><button class="p" onclick="send({action:'open',id:'${b.id}'})" ${b.state === 'fault' ? 'disabled' : ''}>เปิด</button>
+    <button onclick="send({action:'close',id:'${b.id}'})" ${b.state === 'fault' ? 'disabled' : ''}>ปิด</button>
+    <button onclick="send({action:'status',id:'${b.id}',status:'${b.state === 'fault' ? 'ok' : 'fault'}',note:'${b.state === 'fault' ? '' : 'แจ้งจาก Dashboard'}'})">${b.state === 'fault' ? 'ซ่อมเสร็จ' : 'แจ้งเสีย'}</button>
+    <button onclick="send({action:'select',id:'${b.id}'})">ดู</button></div></div>`).join('');
+}
+window.addEventListener('message', ev => {
+  if (ev.source !== frame.contentWindow) return;               // only trust our own iframe
+  const m = ev.data || {};
+  if (m.type === 'parking-event') {
+    log.textContent = `${new Date().toLocaleTimeString()}  ${m.event} ${m.id || ''} ${m.state || m.status || ''}\n` + log.textContent;
+    send({ action: 'state' });
+  }
+  if (m.type === 'parking-reply' && m.state) { state = m.state; render(); }
+});
+</script>
+</body>
+</html>

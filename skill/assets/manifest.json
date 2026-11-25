@@ -1,0 +1,30 @@
+{
+ "textures": {
+  "asphalt": {
+   "asset": "asphalt_02",
+   "diff": "textures/asphalt_02/diff.jpg",
+   "nor": "textures/asphalt_02/nor.jpg",
+   "rough": "textures/asphalt_02/rough.jpg"
+  },
+  "grass": {
+   "asset": "leafy_grass",
+   "diff": "textures/leafy_grass/diff.jpg",
+   "nor": "textures/leafy_grass/nor.jpg",
+   "rough": "textures/leafy_grass/rough.jpg"
+  },
+  "concrete": {
+   "asset": "concrete_floor_02",
+   "diff": "textures/concrete_floor_02/diff.jpg",
+   "nor": "textures/concrete_floor_02/nor.jpg",
+   "rough": "textures/concrete_floor_02/rough.jpg"
+  },
+  "pavers": {
+   "asset": "interlocking_concrete_pavers",
+   "diff": "textures/interlocking_concrete_pavers/diff.jpg",
+   "nor": "textures/interlocking_concrete_pavers/nor.jpg",
+   "rough": "textures/interlocking_concrete_pavers/rough.jpg"
+  }
+ },
+ "hdri": "hdri/kloofendal_48d_partly_cloudy_puresky_2k.hdr",
+ "license": "CC0 (polyhaven.com)"
+}

@@ -1,0 +1,6 @@
+﻿ParkingSite3D kit - 2026-11-24 03:25
+Blender   5.3.0 (hash 02f0899d78e3, built 2026-11-10) - blender\blender-5.3.0-windows.zip
+Python    3.11 + Pillow 13.0.0
+Skill     parking-site-3d (skill\parking-site-3d)
+Reference fingerprints: reference\*.json (sample, campus_5_gates, hardware_library, building_library)
+Rule: use ONLY this Blender for these projects. A newer Blender (e.g. Steam auto-update) may change looks.

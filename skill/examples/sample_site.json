@@ -1,0 +1,80 @@
+{
+  "name": "ลานจอดรถตัวอย่าง (Sample Plaza)",
+  "notes": "Units metres. X = east, Y = north, origin = south-west corner of the site. Headings in degrees, 0 = east, 90 = north (direction the device faces / traffic flows / barrier arm points).",
+  "site": [[0, 0], [90, 0], [90, 60], [0, 60]],
+  "streets": [
+    {"id": "ST1", "label": "ถนนสาธารณะ", "polygon": [[-12, -12], [102, -12], [102, 0], [-12, 0]], "centerline": [[-12, -6], [102, -6]]}
+  ],
+  "buildings": [
+    {"id": "B1", "label": "อาคารพาณิชย์", "polygon": [[25, 46.5], [75, 46.5], [75, 58], [25, 58]], "height": 8, "entrance": [50, 46.5]}
+  ],
+  "sidewalks": [
+    {"id": "SW1", "polygon": [[20, 42.6], [80, 42.6], [80, 46.5], [20, 46.5]]}
+  ],
+  "parking_areas": [
+    {"id": "A1", "label": "ลานจอดหลัก", "polygon": [[3.7, 9.7], [86.3, 9.7], [86.3, 42.3], [3.7, 42.3]],
+     "angle_deg": 0, "stall_angle": 90, "offset_v": 0.3, "margin": 0.2,
+     "accessible": 4, "ev": 4, "special_near": [50, 42]},
+    {"id": "M1", "label": "ที่จอดจักรยานยนต์", "vehicle": "motorcycle", "polygon": [[3.7, 43], [19.5, 43], [19.5, 58], [3.7, 58]],
+     "angle_deg": 0, "stall_angle": 90, "margin": 0.2}
+  ],
+  "roads": [
+    {"id": "R1", "label": "ทางเข้า", "points": [[12, -6], [12, 15.5]], "width": 8.6},
+    {"id": "R2", "label": "ทางออก", "points": [[77.05, 15.5], [77.05, -6]], "width": 4.9},
+    {"id": "R3", "label": "ทางเชื่อมฝั่งตะวันตก", "points": [[7, 15], [7, 37]], "width": 6},
+    {"id": "R4", "label": "ทางเชื่อมฝั่งตะวันออก", "points": [[83, 15], [83, 37]], "width": 6},
+    {"id": "R5", "label": "ทางเข้าที่จอดจักรยานยนต์", "points": [[7, 37], [7, 50.5]], "width": 3}
+  ],
+  "islands": [
+    {"id": "I1", "polygon": [[11.4, 2.5], [12.6, 2.5], [12.6, 9.5], [11.4, 9.5]], "kind": "equipment"},
+    {"id": "I2", "polygon": [[16.3, 2.5], [17.5, 2.5], [17.5, 9.5], [16.3, 9.5]], "kind": "equipment"},
+    {"id": "I3", "polygon": [[74.6, 2.5], [75.8, 2.5], [75.8, 9.5], [74.6, 9.5]], "kind": "equipment"},
+    {"id": "I4", "polygon": [[28, 21], [31, 21], [31, 31], [28, 31]]},
+    {"id": "I5", "polygon": [[44, 21], [50, 21], [50, 31], [44, 31]]},
+    {"id": "I6", "polygon": [[59, 21], [62, 21], [62, 31], [59, 31]]}
+  ],
+  "trees": [[47, 23.5], [47, 28.5], [24, 5], [32, 5], [40, 5], [48, 5], [56, 5], [64, 5], [88, 30], [88, 50], [22, 52], [80, 52]],
+  "gates": [
+    {"id": "G1", "type": "entry", "label": "ทางเข้าหลัก", "pos": [12, 7], "heading": 90, "lanes": 2},
+    {"id": "G2", "type": "exit", "label": "ทางออก", "pos": [77.65, 5], "heading": 270, "lanes": 1}
+  ],
+  "arrows": [
+    {"pos": [9.55, 1.5], "heading": 90}, {"pos": [14.45, 1.5], "heading": 90},
+    {"pos": [77.65, 12.5], "heading": 270}, {"pos": [77.65, 1.0], "heading": 270}
+  ],
+  "equipment": [
+    {"type": "lpr_camera",       "gate": "G1", "pos": [12, 3.2], "heading": 270, "label": "กล้อง LPR ขาเข้า ช่อง 1"},
+    {"type": "ticket_dispenser", "gate": "G1", "pos": [12, 5.2], "heading": 180, "label": "ตู้จ่ายบัตรจอด ช่อง 1"},
+    {"type": "intercom",         "gate": "G1", "pos": [12, 4.3], "heading": 180},
+    {"type": "barrier_gate",     "gate": "G1", "pos": [12, 7.2], "heading": 180, "arm": 3.6, "label": "ไม้กั้นขาเข้า ช่อง 1"},
+    {"type": "loop_detector",    "gate": "G1", "pos": [9.55, 5.2], "heading": 90, "label": "ลูปตรวจจับรถ (หน้าตู้)"},
+    {"type": "loop_detector",    "gate": "G1", "pos": [9.55, 8.6], "heading": 90, "label": "ลูปตรวจจับรถ (หลังไม้กั้น)"},
+    {"type": "lpr_camera",       "gate": "G1", "pos": [16.9, 3.2], "heading": 270, "label": "กล้อง LPR ขาเข้า ช่อง 2 (สมาชิก)"},
+    {"type": "card_reader",      "gate": "G1", "pos": [16.9, 5.2], "heading": 180, "label": "เครื่องอ่านบัตรสมาชิก"},
+    {"type": "barrier_gate",     "gate": "G1", "pos": [16.9, 7.2], "heading": 180, "arm": 3.6, "label": "ไม้กั้นขาเข้า ช่อง 2", "status": "fault", "note": "มอเตอร์ไม่ทำงาน ปิดช่องทางรอช่าง"},
+    {"type": "loop_detector",    "gate": "G1", "pos": [14.45, 5.2], "heading": 90},
+    {"type": "loop_detector",    "gate": "G1", "pos": [14.45, 8.6], "heading": 90},
+    {"type": "lpr_camera",       "gate": "G2", "pos": [75.2, 8.8], "heading": 90, "label": "กล้อง LPR ขาออก"},
+    {"type": "card_reader",      "gate": "G2", "pos": [75.2, 6.8], "heading": 0, "label": "เครื่องอ่านบัตรขาออก"},
+    {"type": "intercom",         "gate": "G2", "pos": [75.2, 5.9], "heading": 0},
+    {"type": "barrier_gate",     "gate": "G2", "pos": [75.2, 4.8], "heading": 0, "arm": 3.7, "label": "ไม้กั้นขาออก"},
+    {"type": "loop_detector",    "gate": "G2", "pos": [77.65, 6.8], "heading": 270},
+    {"type": "loop_detector",    "gate": "G2", "pos": [77.65, 3.4], "heading": 270},
+    {"type": "guard_booth",      "gate": "G2", "pos": [71.5, 5.5], "heading": 0, "label": "ป้อมยามทางออก"},
+    {"type": "vacancy_sign",     "gate": "G1", "pos": [4.5, 2.5], "heading": 270, "label": "ป้ายแสดงช่องว่าง หน้าโครงการ"},
+    {"type": "sign",             "gate": "G2", "pos": [80.4, 1.2], "heading": 270, "label": "ป้ายทางออก ห้ามเข้า", "text": "EXIT"},
+    {"type": "speed_bump",       "gate": "G1", "pos": [12, 12.2], "heading": 0, "length": 8.6},
+    {"type": "speed_bump",       "gate": "G2", "pos": [77.05, 12.2], "heading": 0, "length": 4.9},
+    {"type": "pay_station", "pos": [35, 44.2], "heading": 270, "label": "ตู้ชำระเงิน หน้าอาคาร 1"},
+    {"type": "pay_station", "pos": [65, 44.2], "heading": 270, "label": "ตู้ชำระเงิน หน้าอาคาร 2"},
+    {"type": "cctv", "pos": [2.5, 8.5], "heading": 45, "label": "กล้องมุมตะวันตกเฉียงใต้"},
+    {"type": "cctv", "pos": [87.5, 8.5], "heading": 135, "label": "กล้องมุมตะวันออกเฉียงใต้"},
+    {"type": "cctv", "pos": [87.5, 43.5], "heading": 225, "label": "กล้องมุมตะวันออกเฉียงเหนือ"},
+    {"type": "cctv", "pos": [21, 44.5], "heading": 300, "label": "กล้องหน้าอาคาร"},
+    {"type": "cctv", "pos": [29.5, 26], "heading": 0, "label": "กล้อง PTZ กลางลาน (เกาะ I4)", "model": "ptz"},
+    {"type": "light_pole", "pos": [29.5, 23]}, {"type": "light_pole", "pos": [29.5, 29]},
+    {"type": "light_pole", "pos": [60.5, 23]}, {"type": "light_pole", "pos": [60.5, 29]},
+    {"type": "light_pole", "pos": [47, 26]},
+    {"type": "light_pole", "pos": [2.5, 26]}, {"type": "light_pole", "pos": [87.5, 26]}
+  ]
+}
